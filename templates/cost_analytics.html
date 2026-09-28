@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Cost Analytics - Jev AI Control Center{% endblock %}
+{% block content %}
+<div class="page-title">Cost Analytics</div>
+<div class="page-subtitle">Estimated API cost breakdown across providers, departments, and projects.</div>
+
+<div class="card mb-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      Monthly Budget: <strong>${{ "{:,.0f}".format(budget.monthly_budget) }}</strong>
+      &nbsp;&middot;&nbsp; Used: <strong>${{ "%.2f"|format(budget.used) }}</strong>
+      &nbsp;&middot;&nbsp; Remaining: <strong>${{ "%.2f"|format(budget.remaining) }}</strong>
+      &nbsp;&middot;&nbsp; Usage: <strong>{{ budget.pct_used }}%</strong>
+    </div>
+    <span class="pill-alert {{ budget.level }}">
+      {% if budget.level == 'normal' %}Normal
+      {% elif budget.level == 'warning' %}Warning
+      {% elif budget.level == 'critical' %}Critical
+      {% else %}Budget Exceeded{% endif %}
+    </span>
+  </div>
+  <div class="budget-bar-track">
+    <div class="budget-bar-fill {{ budget.level }}" style="width: {{ [budget.pct_used, 100]|min }}%;"></div>
+  </div>
+</div>
+
+<div class="two-col section">
+  <div>
+    <div class="section-title">By Provider</div>
+    <div class="card">
+      <table class="data-table">
+        <thead><tr><th>Provider</th><th>Requests</th><th>Tokens</th><th>Cost</th></tr></thead>
+        <tbody>
+        {% for p in providers %}
+          <tr>
+            <td><span class="badge-provider">{{ p.provider }}</span></td>
+            <td>{{ p.requests }}</td>
+            <td>{{ "{:,}".format(p.tokens) }}</td>
+            <td>${{ "%.4f"|format(p.cost) }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="4" class="text-muted">No data yet.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div>
+    <div class="section-title">By Department</div>
+    <div class="card">
+      <table class="data-table">
+        <thead><tr><th>Department</th><th>Requests</th><th>Tokens</th><th>Cost</th></tr></thead>
+        <tbody>
+        {% for d in departments %}
+          <tr>
+            <td>{{ d.department }}</td>
+            <td>{{ d.requests }}</td>
+            <td>{{ "{:,}".format(d.tokens) }}</td>
+            <td>${{ "%.4f"|format(d.cost) }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="4" class="text-muted">No data yet.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">By Project</div>
+  <div class="card">
+    <table class="data-table">
+      <thead><tr><th>Project</th><th>Provider</th><th>Requests</th><th>Tokens</th><th>Cost</th></tr></thead>
+      <tbody>
+      {% for p in projects %}
+        <tr>
+          <td>{{ p.project }}</td>
+          <td><span class="badge-provider">{{ p.provider }}</span></td>
+          <td>{{ p.requests }}</td>
+          <td>{{ "{:,}".format(p.tokens) }}</td>
+          <td>${{ "%.4f"|format(p.cost) }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="5" class="text-muted">No data yet.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

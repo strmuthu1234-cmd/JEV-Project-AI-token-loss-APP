@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Usage History - Jev AI Control Center{% endblock %}
+{% block content %}
+<div class="page-title">Usage History</div>
+<div class="page-subtitle">Full request log with filters.</div>
+
+<form method="get" class="filter-bar">
+  <select name="department" class="form-select form-select-sm">
+    <option value="">All Departments</option>
+    {% for d in filter_options.departments %}
+      <option value="{{ d }}" {{ 'selected' if filters.department == d }}>{{ d }}</option>
+    {% endfor %}
+  </select>
+  <select name="project" class="form-select form-select-sm">
+    <option value="">All Projects</option>
+    {% for p in filter_options.projects %}
+      <option value="{{ p }}" {{ 'selected' if filters.project == p }}>{{ p }}</option>
+    {% endfor %}
+  </select>
+  <select name="provider" class="form-select form-select-sm">
+    <option value="">All Providers</option>
+    {% for p in filter_options.providers %}
+      <option value="{{ p }}" {{ 'selected' if filters.provider == p }}>{{ p }}</option>
+    {% endfor %}
+  </select>
+  <select name="model" class="form-select form-select-sm">
+    <option value="">All Models</option>
+    {% for m in filter_options.models %}
+      <option value="{{ m }}" {{ 'selected' if filters.model == m }}>{{ m }}</option>
+    {% endfor %}
+  </select>
+  <select name="complexity" class="form-select form-select-sm">
+    <option value="">All Complexity</option>
+    {% for c in filter_options.complexities %}
+      <option value="{{ c }}" {{ 'selected' if filters.complexity == c }}>{{ c }}</option>
+    {% endfor %}
+  </select>
+  <input type="date" name="date" class="form-control form-control-sm" value="{{ filters.date or '' }}">
+  <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+  <a href="{{ url_for('history') }}" class="btn btn-sm btn-outline-secondary">Clear</a>
+</form>
+
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Date / Time</th><th>Department</th><th>Project</th><th>Provider</th><th>Model</th>
+        <th>Complexity</th><th>Route</th><th>Input</th><th>Output</th><th>Total</th><th>Cost</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for r in activity %}
+      <tr>
+        <td>{{ r.created_at[:19].replace('T', ' ') }}</td>
+        <td>{{ r.department }}</td>
+        <td>{{ r.project }}</td>
+        <td><span class="badge-provider">{{ r.provider }}</span></td>
+        <td>{{ r.model }}</td>
+        <td><span class="badge-complexity badge-{{ r.complexity }}">{{ r.complexity }}</span></td>
+        <td>{{ r.route }}</td>
+        <td>{{ r.input_tokens }}</td>
+        <td>{{ r.output_tokens }}</td>
+        <td>{{ r.total_tokens }}</td>
+        <td>${{ "%.4f"|format(r.estimated_cost or 0) }}</td>
+        <td>{{ r.status }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="12" class="text-muted">No records match the selected filters.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

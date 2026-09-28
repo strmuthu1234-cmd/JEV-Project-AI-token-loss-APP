@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Projects - Jev AI Control Center{% endblock %}
+{% block content %}
+<div class="page-title">Projects</div>
+<div class="page-subtitle">Usage broken down by project and provider.</div>
+
+<div class="card mb-4">
+  <table class="data-table">
+    <thead><tr><th>Project</th><th>Provider</th><th>Requests</th><th>Tokens</th><th>Cost</th></tr></thead>
+    <tbody>
+    {% for p in projects %}
+      <tr>
+        <td>{{ p.project }}</td>
+        <td><span class="badge-provider">{{ p.provider }}</span></td>
+        <td>{{ p.requests }}</td>
+        <td>{{ "{:,}".format(p.tokens) }}</td>
+        <td>${{ "%.4f"|format(p.cost) }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5" class="text-muted">No project usage yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="section-title">Add Project</div>
+<div class="card form-card">
+  <form method="post" action="{{ url_for('add_project') }}">
+    <div class="mb-3">
+      <label class="form-label">Project Name</label>
+      <input type="text" name="name" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Department</label>
+      <select name="department" class="form-select">
+        {% for d in all_departments %}
+          <option value="{{ d.name }}">{{ d.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Project</button>
+  </form>
+</div>
+
+<div class="section-title mt-4">All Projects</div>
+<div class="card">
+  <table class="data-table">
+    <thead><tr><th>Name</th><th>Department</th><th>Created</th></tr></thead>
+    <tbody>
+    {% for p in all_projects %}
+      <tr>
+        <td>{{ p.name }}</td>
+        <td>{{ p.department_name or "-" }}</td>
+        <td>{{ p.created_at[:19].replace('T',' ') }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

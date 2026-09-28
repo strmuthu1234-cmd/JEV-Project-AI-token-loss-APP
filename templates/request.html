@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}New AI Request - Jev AI Control Center{% endblock %}
+{% block content %}
+<div class="page-title">New AI Request</div>
+<div class="page-subtitle">Submit a prompt. Jev will classify it, choose a model tier, and route it to a provider.</div>
+
+<div class="card form-card">
+  <form method="post">
+    <div class="mb-3">
+      <label class="form-label">Department</label>
+      <select name="department" class="form-select" required>
+        <option value="" disabled selected>Select department</option>
+        {% for d in departments %}
+          <option value="{{ d.name }}">{{ d.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Project</label>
+      <select name="project" class="form-select" required>
+        <option value="" disabled selected>Select project</option>
+        {% for p in projects %}
+          <option value="{{ p.name }}">{{ p.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Provider</label>
+      <select name="provider" class="form-select" required>
+        <option value="openai">OpenAI / ChatGPT</option>
+        <option value="anthropic">Anthropic / Claude</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Prompt</label>
+      <textarea name="prompt" class="form-control" rows="5" placeholder="Describe the task..." required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit Request</button>
+  </form>
+</div>
+
+{% if result %}
+<div class="card result-card">
+  <div class="section-title">
+    Jev Decision
+    {% if result.decision.decision_source == 'demo' %}<span class="demo-tag">Demo Decision</span>{% else %}<span class="demo-tag">Real Jev Decision</span>{% endif %}
+  </div>
+  <div class="result-row"><span class="k">Complexity</span><span class="v"><span class="badge-complexity badge-{{ result.decision.complexity }}">{{ result.decision.complexity }}</span></span></div>
+  <div class="result-row"><span class="k">Route</span><span class="v">{{ result.decision.route }}</span></div>
+  <div class="result-row"><span class="k">Human Review</span><span class="v {{ 'badge-review-yes' if result.decision.human_review else 'badge-review-no' }}">{{ "YES" if result.decision.human_review else "NO" }}</span></div>
+  <div class="result-row"><span class="k">Confidence</span><span class="v">{{ (result.decision.confidence * 100)|round(1) }}%</span></div>
+  <div class="result-row"><span class="k">Provider</span><span class="v"><span class="badge-provider">{{ result.provider }}</span></span></div>
+  <div class="result-row"><span class="k">Model</span><span class="v">{{ result.model }}</span></div>
+</div>
+
+<div class="card mt-3">
+  <div class="section-title">
+    AI Response
+    {% if result.ai_result.source == 'demo' %}<span class="demo-tag">Demo Response</span>{% endif %}
+  </div>
+  <div class="response-box">{{ result.ai_result.response }}</div>
+  <div class="two-col mt-3">
+    <div>
+      <div class="result-row"><span class="k">Input Tokens</span><span class="v">{{ result.ai_result.input_tokens }}</span></div>
+      <div class="result-row"><span class="k">Output Tokens</span><span class="v">{{ result.ai_result.output_tokens }}</span></div>
+      <div class="result-row"><span class="k">Total Tokens</span><span class="v">{{ result.ai_result.total_tokens }}</span></div>
+    </div>
+    <div>
+      <div class="result-row"><span class="k">Estimated API Cost</span><span class="v">${{ "%.6f"|format(result.cost) }}</span></div>
+      <div class="result-row"><span class="k">Response Time</span><span class="v">{{ result.ai_result.response_time }}s</span></div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Settings - Jev AI Control Center{% endblock %}
+{% block content %}
+<div class="page-title">Settings</div>
+<div class="page-subtitle">Integration status. API keys are never displayed here — configure them in your .env file.</div>
+
+<div class="card form-card">
+  <div class="settings-row">
+    <span>Jev API (TYPESAFE_API_KEY)</span>
+    <span class="pill-alert {{ 'normal' if jev_configured else 'warning' }}">{{ "Configured" if jev_configured else "Not Configured (Demo Mode)" }}</span>
+  </div>
+  <div class="settings-row">
+    <span>OpenAI (OPENAI_API_KEY)</span>
+    <span class="pill-alert {{ 'normal' if openai_configured else 'warning' }}">{{ "Configured" if openai_configured else "Not Configured (Demo Mode)" }}</span>
+  </div>
+  <div class="settings-row">
+    <span>Anthropic / Claude (ANTHROPIC_API_KEY)</span>
+    <span class="pill-alert {{ 'normal' if anthropic_configured else 'warning' }}">{{ "Configured" if anthropic_configured else "Not Configured (Demo Mode)" }}</span>
+  </div>
+</div>
+
+<div class="section-title mt-4">How to configure</div>
+<div class="card form-card">
+  <p>1. Copy <code>.env.example</code> to <code>.env</code> in the project root.</p>
+  <p>2. Fill in <code>TYPESAFE_API_KEY</code>, <code>OPENAI_API_KEY</code>, and/or <code>ANTHROPIC_API_KEY</code>.</p>
+  <p>3. Restart the Flask application.</p>
+  <p class="mb-0">Any integration left blank automatically runs in demo/fallback mode.</p>
+</div>
+{% endblock %}

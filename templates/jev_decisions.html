@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Jev Decisions - Jev AI Control Center{% endblock %}
+{% block content %}
+<div class="page-title">Jev Decisions</div>
+<div class="page-subtitle">Every routing decision Jev has made, demo or real.</div>
+
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Date / Time</th><th>Department</th><th>Project</th><th>Provider</th><th>Model</th>
+        <th>Complexity</th><th>Route</th><th>Confidence</th><th>Source</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for d in decisions %}
+      <tr>
+        <td>{{ d.created_at[:19].replace('T', ' ') }}</td>
+        <td>{{ d.department }}</td>
+        <td>{{ d.project }}</td>
+        <td><span class="badge-provider">{{ d.provider }}</span></td>
+        <td>{{ d.model }}</td>
+        <td><span class="badge-complexity badge-{{ d.complexity }}">{{ d.complexity }}</span></td>
+        <td>{{ d.route }}</td>
+        <td>{{ (d.confidence * 100)|round(1) }}%</td>
+        <td>{{ "Demo Decision" if d.decision_source == 'demo' else "Real Jev API" }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="9" class="text-muted">No decisions recorded yet.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
